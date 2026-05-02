@@ -588,15 +588,15 @@
       </div>
     </div>
     <div>
-      <div class="contact-form">
+      <form class="contact-form" action="https://formspree.io/f/xbdwlzqr" method="POST">
         <div class="form-row">
-          <div class="form-field"><label>First name</label><input type="text" placeholder="Jean"/></div>
-          <div class="form-field"><label>Last name</label><input type="text" placeholder="Dupont"/></div>
+          <div class="form-field"><label>First name</label><input type="text" name="first_name" placeholder="Jean" required/></div>
+          <div class="form-field"><label>Last name</label><input type="text" name="last_name" placeholder="Dupont" required/></div>
         </div>
-        <div class="form-field"><label>Email</label><input type="email" placeholder="you@company.com"/></div>
+        <div class="form-field"><label>Email</label><input type="email" name="email" placeholder="you@company.com" required/></div>
         <div class="form-field">
           <label>Service needed</label>
-          <select>
+          <select name="service">
             <option value="">Select a service…</option>
             <option>System Design</option>
             <option>Electronics Design</option>
@@ -606,9 +606,9 @@
             <option>Full turnkey project</option>
           </select>
         </div>
-        <div class="form-field"><label>Tell us about your project</label><textarea placeholder="Brief description, timeline, and any key constraints…"></textarea></div>
-        <button class="btn-primary" style="align-self:flex-start;" onclick="alert('Message sent! We\'ll be in touch within one business day.')">Send Message →</button>
-      </div>
+        <div class="form-field"><label>Tell us about your project</label><textarea name="message" placeholder="Brief description, timeline, and any key constraints…" required></textarea></div>
+        <button type="submit" class="btn-primary" style="align-self:flex-start;">Send Message →</button>
+      </form>
     </div>
   </div>
 </section>
