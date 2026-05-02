@@ -588,55 +588,214 @@
       </div>
     </div>
     <div>
-      <!-- Formspree success / error banners -->
-      <div data-fs-success style="display:none; font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent); border: 0.5px solid var(--accent); padding: 1rem 1.2rem; margin-bottom: 1rem;">
-        ✓ Message sent! We'll be in touch within one business day.
-      </div>
-      <div data-fs-error style="display:none; font-family: var(--font-mono); font-size: 0.85rem; color: #ff6b6b; border: 0.5px solid #ff6b6b; padding: 1rem 1.2rem; margin-bottom: 1rem;"></div>
+      <style>
+        /* SUCCESS STATE */
+        .form-wrapper { position: relative; }
+        .success-overlay {
+          display: none;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 3rem 2rem;
+          border: 0.5px solid var(--accent);
+          background: rgba(232,255,71,0.03);
+          text-align: center;
+          animation: fadeUp 0.5s ease both;
+        }
+        .success-overlay.visible { display: flex; }
+        .checkmark-circle {
+          width: 72px; height: 72px;
+          border-radius: 50%;
+          border: 2px solid var(--accent);
+          display: flex; align-items: center; justify-content: center;
+          margin-bottom: 1.5rem;
+          position: relative;
+          animation: scaleIn 0.4s 0.1s ease both;
+        }
+        .checkmark-circle svg {
+          width: 34px; height: 34px;
+          stroke: var(--accent);
+          stroke-width: 2.5;
+          stroke-dasharray: 50;
+          stroke-dashoffset: 50;
+          animation: drawCheck 0.4s 0.4s ease forwards;
+          fill: none;
+        }
+        .success-title {
+          font-size: 1.4rem; font-weight: 800;
+          letter-spacing: -0.02em;
+          margin-bottom: 0.6rem;
+          animation: fadeUp 0.4s 0.5s ease both; opacity: 0;
+        }
+        .success-sub {
+          font-family: var(--font-mono);
+          font-size: 0.85rem;
+          color: var(--muted);
+          line-height: 1.75;
+          max-width: 320px;
+          animation: fadeUp 0.4s 0.6s ease both; opacity: 0;
+        }
+        .success-tag {
+          margin-top: 1.5rem;
+          font-family: var(--font-mono);
+          font-size: 0.7rem;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: var(--accent);
+          opacity: 0.7;
+          animation: fadeUp 0.4s 0.7s ease both; opacity: 0;
+        }
+        @keyframes scaleIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes drawCheck { to { stroke-dashoffset: 0; } }
 
-      <form id="contact-form" class="contact-form">
-        <div class="form-row">
-          <div class="form-field">
-            <label for="first_name">First name</label>
-            <input type="text" id="first_name" name="first_name" placeholder="Jean" required data-fs-field/>
-            <span data-fs-error="first_name" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;"></span>
+        /* ERROR BANNER */
+        .error-banner {
+          display: none;
+          font-family: var(--font-mono);
+          font-size: 0.82rem;
+          color: #ff6b6b;
+          border: 0.5px solid #ff6b6b;
+          padding: 0.85rem 1.2rem;
+          margin-bottom: 1rem;
+          background: rgba(255,107,107,0.05);
+        }
+        .error-banner.visible { display: block; }
+
+        /* SUBMIT BUTTON LOADING STATE */
+        .btn-primary[disabled] {
+          opacity: 0.6;
+          cursor: not-allowed;
+          clip-path: none;
+        }
+        .btn-primary[disabled]::after {
+          content: '';
+          display: inline-block;
+          width: 10px; height: 10px;
+          border: 2px solid #0a0a0b;
+          border-top-color: transparent;
+          border-radius: 50%;
+          animation: spin 0.6s linear infinite;
+          margin-left: 0.6rem;
+          vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+      </style>
+
+      <div class="form-wrapper">
+
+        <!-- SUCCESS OVERLAY -->
+        <div class="success-overlay" id="success-overlay">
+          <div class="checkmark-circle">
+            <svg viewBox="0 0 34 34"><polyline points="6,17 13,24 28,10"/></svg>
+          </div>
+          <div class="success-title">Message sent!</div>
+          <div class="success-sub">Thank you for reaching out. We'll review your project and get back to you within one business day.</div>
+          <div class="success-tag">— Pluriel Innovation</div>
+        </div>
+
+        <!-- ERROR BANNER -->
+        <div class="error-banner" id="error-banner">
+          ✕ Something went wrong. Please check your details and try again.
+        </div>
+
+        <!-- FORM -->
+        <form id="contact-form" class="contact-form">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="first_name">First name</label>
+              <input type="text" id="first_name" name="first_name" placeholder="Jean" required/>
+              <span class="field-error" id="err-first_name" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;display:none;"></span>
+            </div>
+            <div class="form-field">
+              <label for="last_name">Last name</label>
+              <input type="text" id="last_name" name="last_name" placeholder="Dupont" required/>
+              <span class="field-error" id="err-last_name" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;display:none;"></span>
+            </div>
           </div>
           <div class="form-field">
-            <label for="last_name">Last name</label>
-            <input type="text" id="last_name" name="last_name" placeholder="Dupont" required data-fs-field/>
-            <span data-fs-error="last_name" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;"></span>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@company.com" required/>
+            <span class="field-error" id="err-email" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;display:none;"></span>
           </div>
-        </div>
-        <div class="form-field">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="you@company.com" required data-fs-field/>
-          <span data-fs-error="email" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;"></span>
-        </div>
-        <div class="form-field">
-          <label for="service">Service needed</label>
-          <select id="service" name="service" data-fs-field>
-            <option value="">Select a service…</option>
-            <option>System Design</option>
-            <option>Electronics Design</option>
-            <option>PCBA Design</option>
-            <option>Prototyping</option>
-            <option>Manufacturing Preparation</option>
-            <option>Full turnkey project</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label for="message">Tell us about your project</label>
-          <textarea id="message" name="message" placeholder="Brief description, timeline, and any key constraints…" required data-fs-field></textarea>
-          <span data-fs-error="message" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;"></span>
-        </div>
-        <button type="submit" class="btn-primary" style="align-self:flex-start;" data-fs-submit-btn>Send Message →</button>
-      </form>
+          <div class="form-field">
+            <label for="service">Service needed</label>
+            <select id="service" name="service">
+              <option value="">Select a service…</option>
+              <option>System Design</option>
+              <option>Electronics Design</option>
+              <option>PCBA Design</option>
+              <option>Prototyping</option>
+              <option>Manufacturing Preparation</option>
+              <option>Full turnkey project</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="message">Tell us about your project</label>
+            <textarea id="message" name="message" placeholder="Brief description, timeline, and any key constraints…" required></textarea>
+            <span class="field-error" id="err-message" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;display:none;"></span>
+          </div>
+          <button type="submit" id="submit-btn" class="btn-primary" style="align-self:flex-start;">Send Message →</button>
+        </form>
+      </div>
 
       <script>
-        window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
-        formspree('initForm', { formElement: '#contact-form', formId: 'xbdwlzqr' });
+        (function () {
+          var form = document.getElementById('contact-form');
+          var submitBtn = document.getElementById('submit-btn');
+          var successOverlay = document.getElementById('success-overlay');
+          var errorBanner = document.getElementById('error-banner');
+
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Reset errors
+            errorBanner.classList.remove('visible');
+            document.querySelectorAll('.field-error').forEach(function(el){ el.style.display='none'; el.textContent=''; });
+            document.querySelectorAll('#contact-form input, #contact-form textarea, #contact-form select').forEach(function(el){ el.style.borderColor=''; });
+
+            // Disable button & show spinner
+            submitBtn.disabled = true;
+            var originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending';
+
+            var data = new FormData(form);
+
+            fetch('https://formspree.io/f/xbdwlzqr', {
+              method: 'POST',
+              body: data,
+              headers: { 'Accept': 'application/json' }
+            })
+            .then(function(response) { return response.json().then(function(json){ return { ok: response.ok, json: json }; }); })
+            .then(function(result) {
+              if (result.ok) {
+                // Show success animation
+                form.style.display = 'none';
+                successOverlay.classList.add('visible');
+              } else {
+                // Show field-level errors if available
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                if (result.json.errors) {
+                  result.json.errors.forEach(function(err) {
+                    var fieldErr = document.getElementById('err-' + err.field);
+                    var fieldInput = document.getElementById(err.field);
+                    if (fieldErr) { fieldErr.textContent = err.message; fieldErr.style.display = 'block'; }
+                    if (fieldInput) { fieldInput.style.borderColor = '#ff6b6b'; }
+                  });
+                } else {
+                  errorBanner.classList.add('visible');
+                }
+              }
+            })
+            .catch(function() {
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalText;
+              errorBanner.textContent = '✕ Network error. Please check your connection and try again.';
+              errorBanner.classList.add('visible');
+            });
+          });
+        })();
       </script>
-      <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
     </div>
   </div>
 </section>
