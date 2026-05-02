@@ -588,15 +588,33 @@
       </div>
     </div>
     <div>
-      <form class="contact-form" action="https://formspree.io/f/xbdwlzqr" method="POST">
+      <!-- Formspree success / error banners -->
+      <div data-fs-success style="display:none; font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent); border: 0.5px solid var(--accent); padding: 1rem 1.2rem; margin-bottom: 1rem;">
+        ✓ Message sent! We'll be in touch within one business day.
+      </div>
+      <div data-fs-error style="display:none; font-family: var(--font-mono); font-size: 0.85rem; color: #ff6b6b; border: 0.5px solid #ff6b6b; padding: 1rem 1.2rem; margin-bottom: 1rem;"></div>
+
+      <form id="contact-form" class="contact-form">
         <div class="form-row">
-          <div class="form-field"><label>First name</label><input type="text" name="first_name" placeholder="Jean" required/></div>
-          <div class="form-field"><label>Last name</label><input type="text" name="last_name" placeholder="Dupont" required/></div>
+          <div class="form-field">
+            <label for="first_name">First name</label>
+            <input type="text" id="first_name" name="first_name" placeholder="Jean" required data-fs-field/>
+            <span data-fs-error="first_name" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;"></span>
+          </div>
+          <div class="form-field">
+            <label for="last_name">Last name</label>
+            <input type="text" id="last_name" name="last_name" placeholder="Dupont" required data-fs-field/>
+            <span data-fs-error="last_name" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;"></span>
+          </div>
         </div>
-        <div class="form-field"><label>Email</label><input type="email" name="email" placeholder="you@company.com" required/></div>
         <div class="form-field">
-          <label>Service needed</label>
-          <select name="service">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@company.com" required data-fs-field/>
+          <span data-fs-error="email" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;"></span>
+        </div>
+        <div class="form-field">
+          <label for="service">Service needed</label>
+          <select id="service" name="service" data-fs-field>
             <option value="">Select a service…</option>
             <option>System Design</option>
             <option>Electronics Design</option>
@@ -606,9 +624,19 @@
             <option>Full turnkey project</option>
           </select>
         </div>
-        <div class="form-field"><label>Tell us about your project</label><textarea name="message" placeholder="Brief description, timeline, and any key constraints…" required></textarea></div>
-        <button type="submit" class="btn-primary" style="align-self:flex-start;">Send Message →</button>
+        <div class="form-field">
+          <label for="message">Tell us about your project</label>
+          <textarea id="message" name="message" placeholder="Brief description, timeline, and any key constraints…" required data-fs-field></textarea>
+          <span data-fs-error="message" style="font-family:var(--font-mono);font-size:0.72rem;color:#ff6b6b;margin-top:0.25rem;"></span>
+        </div>
+        <button type="submit" class="btn-primary" style="align-self:flex-start;" data-fs-submit-btn>Send Message →</button>
       </form>
+
+      <script>
+        window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+        formspree('initForm', { formElement: '#contact-form', formId: 'xbdwlzqr' });
+      </script>
+      <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
     </div>
   </div>
 </section>
